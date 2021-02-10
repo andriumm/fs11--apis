@@ -57,22 +57,29 @@ app.post("/pokemon", function(req, res) {
   res.status(201).send(data);
 });
 
-// app.put("/pokemon/:id", function(req, res) {
-//   const pokemon = data.find(e => parseInt(e.id) === parseInt(req.params.id));
+app.put("/pokemon/:id", function(req, res) {
+  const indexToModify = data.findIndex(e => +e.id === +req.params.id);
 
-//   if (!pokemon) {
-//     res.status(404).send({ message: "404: Not found (resource does not exist)"});
-//   }
-//   res.send(...req.body, );
-// })
+  if (indexToModify < 0) {
+    //when the index is not found, it returns -1, that's why I put the condition less than 0.
+    //console.log("I'm here2")
+    res
+      .status(404)
+      .send({ message: "404: Not found (resource does not exist)" });
+  } else {
+    const newObject = { ...data[indexToModify], ...req.body };
+    data[indexToModify] = newObject;
+    res.status(200).send("Seccesfully updated");
+  }
+});
 
 app.delete("/pokemon/:id", function(req, res) {
   const indexToDelete = data.findIndex(e => +e.id === +req.params.id);
-  console.log("I'm here");
-  console.log(indexToDelete);
+  //console.log("I'm here")
+  //console.log(indexToDelete);
   if (indexToDelete < 0) {
     //when the index is not found, it returns -1, that's why I put the condition less than 0.
-    console.log("I'm here2");
+    //console.log("I'm here2")
     res
       .status(404)
       .send({ message: "404: Not found (resource does not exist)" });

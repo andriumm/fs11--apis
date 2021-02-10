@@ -19,29 +19,68 @@ app.get("/pokemon", function(req, res) {
   res.send(data);
 });
 
+// to receive the information of the pokemon that has the given id.
 app.get("/pokemon/:id", function(req, res) {
-  for (let i = 0; i < data.length; i++) {
-    console.log(data[i]);
-    if (parseInt(data[i].id) === parseInt(req.params.id)) {
-      return res.send(data[i]);
-    }
-  }
-  res.status(404).send("Pokemon does not exist");
+  // for (let i = 0; i < data.length; i++) {
+  //   console.log(data[i]);
+  //   if (parseInt(data[i].id) === parseInt(req.params.id)) {
+  //     return res.send(data[i]);
+  //   }
+  // }
+  // res.status(404).send({ message: "Pokemon does not exist"});
 
-  /*
-  const pokemon = data.find(e => parseInt(e.id) === parseInt(req.params.id))
+  const pokemon = data.find(e => parseInt(e.id) === parseInt(req.params.id));
 
   if (!pokemon) {
-    res.status(404).send('Pokemon does not exist');
+    res.status(404).send({ message: "Pokemon does not exist" });
   }
   res.send(pokemon);
-  */
+});
+
+app.get("/pokemon/:id/attacks", function(req, res) {
+  const pokemon = data.find(e => parseInt(e.id) === parseInt(req.params.id));
+
+  if (!pokemon) {
+    res
+      .status(404)
+      .send({ message: "404: Not found (resource does not exist)" });
+  }
+  res.send(pokemon.attacks);
 });
 
 app.post("/pokemon", function(req, res) {
-  console.log(req.body);
-  data.push(req.body);
-  res.send(data);
+  //console.log(req.body);
+  const lastId = +data[data.length - 1].id;
+  const newPokemon = { ...req.body, id: lastId + 1 };
+
+  data.push(newPokemon);
+  res.status(201).send(data);
+});
+
+// app.put("/pokemon/:id", function(req, res) {
+//   const pokemon = data.find(e => parseInt(e.id) === parseInt(req.params.id));
+
+//   if (!pokemon) {
+//     res.status(404).send({ message: "404: Not found (resource does not exist)"});
+//   }
+//   res.send(...req.body, );
+// })
+
+app.delete("/pokemon/:id", function(req, res) {
+  const indexToDelete = data.findIndex(e => +e.id === +req.params.id);
+  console.log("I'm here");
+  console.log(indexToDelete);
+  if (indexToDelete < 0) {
+    //when the index is not found, it returns -1, that's why I put the condition less than 0.
+    console.log("I'm here2");
+    res
+      .status(404)
+      .send({ message: "404: Not found (resource does not exist)" });
+  } else {
+    data.splice(indexToDelete, 1);
+
+    res.send("Pokemon DELETED");
+  }
 });
 
 app.get("/", function(req, res) {
